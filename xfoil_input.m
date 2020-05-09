@@ -18,13 +18,14 @@ end
 
 fid = fopen('xfoil_input.txt','w');
 fprintf(fid,[perfil '\n']);
+fprintf(fid,'PANE\n');
 fprintf(fid,'PSAV\n');
 fprintf(fid,'coordinatesfoil.txt\n');
 fprintf(fid,'OPER\n');
 fprintf(fid,'v\n');
 fprintf(fid,[Re '\n']);
 fprintf(fid,'ITER\n');
-fprintf(fid,'200\n');
+fprintf(fid,'250\n');
 fprintf(fid,'PACC\n');
 fprintf(fid,[saveFilepolar '\n']);
 fprintf(fid,[savedmbpolar '\n']);

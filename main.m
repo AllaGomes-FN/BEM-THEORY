@@ -16,7 +16,7 @@ AR=14;
 % lambda=input('TSR(Razão velocidade ponta de pá) : ');%%TSR - razão de velocidade de ponta de pá
 % V0=input('Velocidade do fluxo de água livre : ');%%Velocidade do fluxo do fluido
 % alpha_design = input('Angulo de ataque para otimização para o hidrofólio(Não coloque zero!): ');
-perfil = 'NACA 0018';
+perfil = 'LOAD SG6043.dat';
 Ne = 15;
 eta = 0.8;
 rho = 996;
@@ -28,19 +28,18 @@ xfoil_input
 bladeprofile = load('coordinatesfoil.txt');
 plot(bladeprofile(:,1).',bladeprofile(:,2).');
 title('PERFIL DE PÁ UTILIZADO');
-xlim([-1 1.5]);
-ylim([-1 1]);
+xlim([-0.1 1.1]);
+ylim([-0.1 0.5]);
 DADOS = importdata('polar_data.txt',' ',12);
 DATApolar = DADOS.data;
 Extrapolation=procurapolar(DATApolar,AR);
 
-lambda=3.5:0.5:9;
-alpha_design = 1:0.5:10;
+lambdad=3.5:0.5:9;
+alpha_d = 1:0.5:10;
 Cp_melhor=0;
-
-for  i = 1:1:size(alpha_design,2)
-    for j = 1:1:size(lambda,2)
-        [Cp(i,j),DATAturbine,Pot]=BEM(alpha_design(i),lambda(j),Ne,Extrapolation,R,eta,rho,B,V0);
+for  i = 1:1:size(alpha_d,2)
+    for j = 1:1:size(lambdad,2)
+        [Cp(i,j),DATAturbine,Pot]=BEM(alpha_d(i),lambdad(j),Ne,Extrapolation,R,eta,rho,B,V0);
         if Cp(i,j)>Cp_melhor
             Cp_melhor = Cp(i,j);
             palpha_melhor = i;
@@ -51,9 +50,27 @@ for  i = 1:1:size(alpha_design,2)
     end
 end
 fprintf('O MELHOR COEFICIENTE DE POTENCIA PARA O PERFIL DE PÁ SELECIONADO: '+string(Cp_melhor));
-fprintf('\n\nANGULO DE ATAQUE OTIMIZADO: '+string(alpha_design(palpha_melhor))+'\n TSR OTIMIZADO: '+string(lambda(plambda_melhor)) );
+fprintf('\n\nANGULO DE ATAQUE OTIMIZADO: '+string(alpha_d(palpha_melhor))+'\n TSR OTIMIZADO: '+string(lambdad(plambda_melhor)) );
 fprintf('\n\n');
 disp('    r(x) | Corda da pá(r) |Angulo Phi |Angulo Pitch |Angulo Twist |Fator de Correção| C.sustentação| C.arrasto');
 disp(DADOSTURBINA);
 fprintf('POTENCIA TOTAL DA TURBINA : '+string(POTENCIA)+' (WATTS)');
+
+
+figure;
+plot(lambdad,Cp(palpha_melhor,:));
+title('Cp vs TSR');
+xlabel('TSR - Lambda');
+ylabel('Cp');
+xlim([3.5 9]);
+ylim([0.39 0.5]);
+
+figure;
+plot(alpha_d,Cp(:,plambda_melhor));
+title('Cp vs Alpha(AoA)');
+xlabel('AoA - Alpha');
+ylabel('Cp');
+xlim([1 10]);
+ylim([0.3 0.5]);
+
 
